@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { Request, Response } from 'express'
 import { z } from 'zod'
 import { hash as encrypt, compare as comparePassword } from 'bcrypt'
