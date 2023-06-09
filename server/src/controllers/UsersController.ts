@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { z } from 'zod'
-import { hash as encrypt } from 'bcrypt'
+import { hash as encrypt, compare as comparePassword } from 'bcrypt'
+import { sign as signJwt } from 'jsonwebtoken'
 
 import { connection } from '../database/connection'
 
@@ -31,5 +32,30 @@ export class UsersController {
 		})
 
 		return res.status(201).json({ message: 'Usuário cadastrado' })
+	}
+
+	async login(req: Request, res: Response) {
+		const authenticateUserBody = z.object({
+			email: z.string({ required_error: 'Informe o e-mail' }),
+			password: z.string({ required_error: 'Informe a senha' })
+		})
+
+		const { email, password } = authenticateUserBody.parse(req.body)
+
+		const user = await connection.user.findUnique({
+			where: { email }
+		})
+
+		if (!user || !(await comparePassword(password, user.password))) {
+			return res.status(400).json({ message: 'Usuário e/ou senha incorreto(s)' })
+		}
+
+		const token = signJwt({ id: user.id }, process.env.JWT_SECRET || 'secret')
+
+		return res.json({
+			message: 'Usuário autenticado',
+			token,
+			name: user.name
+		})
 	}
 }
