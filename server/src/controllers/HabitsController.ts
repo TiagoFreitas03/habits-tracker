@@ -35,4 +35,56 @@ export class HabitsController {
 
 		return res.status(201).json({ message: 'Hábito cadastrado' })
 	}
+
+	async toggle(req: Request, res: Response) {
+		const { user_id } = req
+
+		const toggleHabitParams = z.string({ required_error: 'Informe o id do hábito' }).uuid()
+		const id = toggleHabitParams.parse(req.params.id)
+
+		const habit = await connection.habit.findFirst({
+			where: { id, user_id },
+			include: { weekDays: true }
+		})
+
+		if (!habit) {
+			return res.status(404).json({ message: 'Hábito não encontrado' })
+		}
+
+		const today = dayjs().startOf('day').toDate()
+
+		if (!habit.weekDays.map(wd => wd.week_day).includes(today.getDay())) {
+			return res.status(400).json({ message: 'Esse hábito não pode ser completado hoje' })
+		}
+
+		let day = await connection.day.findUnique({
+			where: { date: today }
+		})
+
+		if (!day) {
+			day = await connection.day.create({
+				data: { date: today }
+			})
+		}
+
+		const dayHabit = await connection.completedHabits.findUnique({
+			where: {
+				day_id_habit_id: { day_id: day.id, habit_id: id }
+			}
+		})
+
+		if (dayHabit) {
+			await connection.completedHabits.delete({
+				where: { id: dayHabit.id }
+			})
+
+			return res.json({ message: "Hábito 'descompletado'" })
+		} else {
+			await connection.completedHabits.create({
+				data: { day_id: day.id, habit_id: id }
+			})
+
+			return res.json({ message: 'Hábito completado' })
+		}
+	}
 }

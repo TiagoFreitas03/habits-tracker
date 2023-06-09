@@ -13,5 +13,6 @@ routes.post('/users', usersCtrl.create)
 routes.post('/login', usersCtrl.login)
 
 routes.post('/habits', verifyJwt, habitsCtrl.create)
+routes.patch('/habits/:id/toggle', verifyJwt, habitsCtrl.toggle)
 
 export { routes }
