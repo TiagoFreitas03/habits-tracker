@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String
+  password   String
+  name       String
+  created_at DateTime @default(now())
+
+  habits Habit[]
+
+  @@unique([email])
+  @@map("users")
+}
+
+model Habit {
+  id         String   @id @default(uuid())
+  title      String
+  created_at DateTime
+  user_id    String
+
+  user User @relation(fields: [user_id], references: [id])
+
+  completed CompletedHabits[]
+  weekDays  HabitWeekDays[]
+
+  @@map("habits")
+}
+
+model HabitWeekDays {
+  id       Int    @id @default(autoincrement())
+  habit_id String
+  week_day Int
+
+  habit Habit @relation(fields: [habit_id], references: [id])
+
+  @@unique([habit_id, week_day])
+  @@map("habit_week_days")
+}
+
+model Day {
+  id   Int      @id @default(autoincrement())
+  date DateTime
+
+  completed CompletedHabits[]
+
+  @@unique([date])
+  @@map("days")
+}
+
+model CompletedHabits {
+  id       Int    @id @default(autoincrement())
+  day_id   Int
+  habit_id String
+
+  day   Day   @relation(fields: [day_id], references: [id])
+  habit Habit @relation(fields: [habit_id], references: [id])
+
+  @@unique([day_id, habit_id])
+  @@map("completed_habits")
+}
