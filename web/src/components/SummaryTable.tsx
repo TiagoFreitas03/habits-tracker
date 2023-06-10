@@ -22,10 +22,9 @@ export function SummaryTable() {
 
 	const [date, setDate] = useState(new Date())
 	const [summary, setSummary] = useState<Summary>([])
+	const [summaryDates, setSummaryDates] = useState<DateOrNull[]>([])
 
 	const [year, month] = [date.getFullYear(), date.getMonth()]
-
-	const [summaryDates, setSummaryDates] = useState<DateOrNull[]>([])
 
 	useEffect(() => {
 		api.get(`summary/${year}/${month}`).then(res => {
