@@ -9,12 +9,12 @@ export class SummaryController {
 		const getSummaryParams = z.object({
 			year: z.coerce.number({ required_error: 'Informe o ano' }),
 			month: z.coerce.number({ required_error: 'Informe o mês' })
-				.min(1, 'Mês inválido').max(12, 'Mês inválido')
+				.min(0, 'Mês inválido').max(11, 'Mês inválido')
 		})
 
 		const { year, month } = getSummaryParams.parse(req.params)
 
-		const monthStart = new Date(year, month - 1, 1, 0, 0, 0, 0)
+		const monthStart = new Date(year, month, 1, 0, 0, 0, 0)
 		const monthEnd = dayjs(monthStart).endOf('month').toDate()
 
 		const { user_id } = req
