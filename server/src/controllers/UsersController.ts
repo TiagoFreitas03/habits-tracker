@@ -11,7 +11,7 @@ export class UsersController {
 		const createUserBody = z.object({
 			email: z.string({ required_error: 'Informe seu e-mail' }).email('E-mail inválido'),
 			password: z.string({ required_error: 'Informe sua senha' }).min(6, 'Senha muito curta'),
-			name: z.string({ required_error: 'Informe seu nome' })
+			name: z.string({ required_error: 'Informe seu nome' }).min(1, 'Informe seu nome')
 		})
 
 		const { email, password, name } = createUserBody.parse(req.body)
