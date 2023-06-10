@@ -10,10 +10,10 @@ const server = express()
 
 const port = Number(process.env.PORT) ?? 3333
 
+server.use(cors())
 server.use(express.json())
 server.use(routes)
 server.use(errorHandler)
-server.use(cors())
 
 server.listen(port, () => {
 	console.log(`server running on port ${port}`)
