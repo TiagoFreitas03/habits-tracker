@@ -1,7 +1,9 @@
+import { AuthContextProvider } from './contexts/AuthContext'
+
 export function App() {
 	return (
-		<p>
-			hello world
-		</p>
+		<AuthContextProvider>
+			<p>hello world</p>
+		</AuthContextProvider>
 	)
 }
