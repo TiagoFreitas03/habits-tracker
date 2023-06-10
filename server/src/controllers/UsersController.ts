@@ -56,7 +56,8 @@ export class UsersController {
 		return res.json({
 			message: 'Usuário autenticado',
 			token,
-			name: user.name
+			name: user.name,
+			created_at: user.created_at
 		})
 	}
 }
