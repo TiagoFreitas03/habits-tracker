@@ -30,18 +30,21 @@ export class DaysController {
     })
 
 		const day = await connection.day.findFirst({
-      where: {
-        date: parsedDate.toDate(),
-				completed: {
-					every: {
-						habit: { user_id }
-					}
-				}
-      },
-      include: { completed: true }
+      where: { date: parsedDate.toDate() }
     })
 
-		const completedHabits = day?.completed.map(completedHabit => completedHabit.habit_id) ?? []
+		let completedHabits: string[] = []
+
+		if (day) {
+			const completed = await connection.completedHabits.findMany({
+				where: {
+					day_id: day.id,
+					habit: { user_id }
+				}
+			})
+
+			completedHabits = completed.map(completedHabit => completedHabit.habit_id)
+		}
 
 		return res.json({ possibleHabits, completedHabits })
 	}
