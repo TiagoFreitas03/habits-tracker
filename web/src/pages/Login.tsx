@@ -16,7 +16,8 @@ export function Login() {
 
 		try {
 			const res = await api.post('login', { email, password })
-			signIn(res.data.token)
+			const { token, name, created_at } = res.data
+			signIn(token, { name, created_at: new Date(created_at) })
 		} catch (err: any) {
 			alert(err.response.data.message)
 		}
