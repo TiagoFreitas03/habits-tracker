@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Input } from "../components/Input"
 import { api } from "../lib/axios"
@@ -10,13 +10,15 @@ export function Register() {
 	const [password, setPassword] = useState('')
 	const [errors, setErrors] = useState<any>()
 
+	const navigate = useNavigate()
+
 	async function handleRegisterFormSubmit(event: FormEvent) {
 		event.preventDefault()
 
 		try {
 			const res = await api.post('users', { name, email, password })
 			alert(res.data.message)
-			window.location.href = '/login'
+			navigate('/login')
 		} catch (err: any) {
 			alert(err.response.data.message)
 
